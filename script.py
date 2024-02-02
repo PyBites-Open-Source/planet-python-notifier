@@ -31,7 +31,9 @@ def filter_recent_articles(articles: list[dict], days: int) -> list[dict]:
     return recent_articles
 
 
-def send_email(from_email: str, to_email: str, subject: str, content: str) -> None:
+def send_email(
+    from_email: str, to_email: str, subject: str, content: str
+) -> None:
     message = Mail(
         from_email=from_email,
         to_emails=to_email,
@@ -49,13 +51,15 @@ def send_email(from_email: str, to_email: str, subject: str, content: str) -> No
 def main(days: int = ONE_DAY) -> None:
     articles = fetch_articles()
     recent_articles = filter_recent_articles(articles, days)
-    if len(recent_articles) > 0:
-        subject = "New Pybites Articles"
-        body = "\n\n".join(
-            [f"{article['title']}\n{article['link']}"
-            for article in recent_articles]
-        )
-        send_email(FROM_EMAIL, TO_EMAIL, subject, body)
+    if len(recent_articles) == 0:
+        print("No new articles found")
+        return
+    subject = "New Pybites Articles"
+    body = "\n\n".join(
+        [f"{article['title']}\n{article['link']}"
+         for article in recent_articles]
+    )
+    send_email(FROM_EMAIL, TO_EMAIL, subject, body)
 
 
 if __name__ == "__main__":
