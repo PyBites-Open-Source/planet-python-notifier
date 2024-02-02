@@ -49,12 +49,13 @@ def send_email(from_email: str, to_email: str, subject: str, content: str) -> No
 def main(days: int = ONE_WEEK) -> None:
     articles = fetch_articles()
     recent_articles = filter_recent_articles(articles, days)
-    subject = "New Pybites Articles"
-    body = "\n\n".join(
-        [f"{article['title']}\n{article['link']}"
-         for article in recent_articles]
-    )
-    send_email(FROM_EMAIL, TO_EMAIL, subject, body)
+    if len(recent_articles) > 0:
+        subject = "New Pybites Articles"
+        body = "\n\n".join(
+            [f"{article['title']}\n{article['link']}"
+            for article in recent_articles]
+        )
+        send_email(FROM_EMAIL, TO_EMAIL, subject, body)
 
 
 if __name__ == "__main__":
