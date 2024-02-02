@@ -13,13 +13,13 @@ API_URL = "https://codechalleng.es/api/articles/"
 ONE_WEEK = 7
 
 
-def fetch_articles():
+def fetch_articles() -> list[dict]:
     response = requests.get(API_URL)
     response.raise_for_status()
     return response.json()
 
 
-def filter_recent_articles(articles, days):
+def filter_recent_articles(articles: list[dict], days: int) -> list[dict]:
     recent_articles = []
     now = datetime.now()
     for article in articles:
@@ -31,7 +31,7 @@ def filter_recent_articles(articles, days):
     return recent_articles
 
 
-def send_email(from_email, to_email, subject, content):
+def send_email(from_email: str, to_email: str, subject: str, content: str) -> None:
     message = Mail(
         from_email=from_email,
         to_emails=to_email,
@@ -46,7 +46,7 @@ def send_email(from_email, to_email, subject, content):
         print(e)
 
 
-def main(days=ONE_WEEK):
+def main(days: int = ONE_WEEK) -> None:
     articles = fetch_articles()
     recent_articles = filter_recent_articles(articles, days)
     subject = "New Pybites Articles"
