@@ -10,7 +10,7 @@ SENDGRID_API_KEY = config("SENDGRID_API_KEY")
 FROM_EMAIL = config("FROM_EMAIL")
 TO_EMAIL = config("TO_EMAIL")
 API_URL = "https://codechalleng.es/api/articles/"
-ONE_WEEK = 7
+ONE_DAY = 1
 
 
 def fetch_articles() -> list[dict]:
@@ -46,7 +46,7 @@ def send_email(from_email: str, to_email: str, subject: str, content: str) -> No
         print(e)
 
 
-def main(days: int = ONE_WEEK) -> None:
+def main(days: int = ONE_DAY) -> None:
     articles = fetch_articles()
     recent_articles = filter_recent_articles(articles, days)
     if len(recent_articles) > 0:
