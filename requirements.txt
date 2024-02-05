@@ -4,21 +4,19 @@
 #
 #    pip-compile
 #
-certifi==2024.2.2
-    # via requests
-charset-normalizer==3.3.2
-    # via requests
-idna==3.6
-    # via requests
+feedparser==6.0.11
+    # via -r requirements.in
+python-dateutil==2.8.2
+    # via -r requirements.in
 python-decouple==3.8
     # via -r requirements.in
 python-http-client==3.3.7
     # via sendgrid
-requests==2.31.0
-    # via -r requirements.in
 sendgrid==6.11.0
     # via -r requirements.in
+sgmllib3k==1.0.0
+    # via feedparser
+six==1.16.0
+    # via python-dateutil
 starkbank-ecdsa==2.2.0
     # via sendgrid
-urllib3==2.2.0
-    # via requests

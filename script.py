@@ -1,32 +1,43 @@
 from datetime import datetime, timedelta
-import sys
+from typing import NamedTuple
+from zoneinfo import ZoneInfo
 
+import feedparser
+from dateutil.parser import parse
 from decouple import config
-import requests
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
 SENDGRID_API_KEY = config("SENDGRID_API_KEY")
 FROM_EMAIL = config("FROM_EMAIL")
 TO_EMAIL = config("TO_EMAIL")
-API_URL = "https://codechalleng.es/api/articles/"
+PLANET_PYTHON_FEED = "https://planetpython.org/rss20.xml"
 ONE_DAY = 1
 
 
-def fetch_articles() -> list[dict]:
-    response = requests.get(API_URL)
-    response.raise_for_status()
-    return response.json()
+class Article(NamedTuple):
+    title: str
+    link: str
+    publish_date: str
 
 
-def filter_recent_articles(articles: list[dict], days: int) -> list[dict]:
+def fetch_articles() -> list[Article]:
+    feed = feedparser.parse(PLANET_PYTHON_FEED)
+    return [
+        Article(entry.title, entry.link, entry.published)
+        for entry in feed.entries
+    ]
+
+
+def filter_recent_articles(
+    articles: list[Article], days: int = ONE_DAY
+) -> list[Article]:
     recent_articles = []
-    now = datetime.now()
+    timezone = ZoneInfo("UTC")
+    now = datetime.now(timezone)
     for article in articles:
-        publish_date = datetime.strptime(
-            article["publish_date"], "%Y-%m-%d %H:%M:%S+00:00"
-        )
-        if now - publish_date <= timedelta(days=days):
+        publish_date = parse(article.publish_date)
+        if now - publish_date <= timedelta(days):
             recent_articles.append(article)
     return recent_articles
 
@@ -48,23 +59,18 @@ def send_email(
         print(e)
 
 
-def main(days: int = ONE_DAY) -> None:
+def main() -> None:
     articles = fetch_articles()
-    recent_articles = filter_recent_articles(articles, days)
+    recent_articles = filter_recent_articles(articles)
     if len(recent_articles) == 0:
         print("No new articles found")
         return
-    subject = "New Pybites Articles"
+    subject = "New Planet Python articles last 24 hours"
     body = "\n\n".join(
-        [f"{article['title']}\n{article['link']}"
-         for article in recent_articles]
+        [f"{article.title}\n{article.link}" for article in recent_articles]
     )
     send_email(FROM_EMAIL, TO_EMAIL, subject, body)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        main()
-    else:
-        days = int(sys.argv[1])
-        main(days)
+    main()
