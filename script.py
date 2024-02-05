@@ -65,7 +65,7 @@ def main() -> None:
     if len(recent_articles) == 0:
         print("No new articles found")
         return
-    subject = "New Planet Python articles last 24 hours"
+    subject = "New Planet Python articles"
     body = "\n\n".join(
         [f"{article.title}\n{article.link}" for article in recent_articles]
     )
