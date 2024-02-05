@@ -49,7 +49,7 @@ def send_email(
         from_email=from_email,
         to_emails=to_email,
         subject=subject,
-        plain_text_content=content,
+        html_content=content,
     )
     try:
         sg = SendGridAPIClient(SENDGRID_API_KEY)
@@ -66,8 +66,12 @@ def main() -> None:
         print("No new articles found")
         return
     subject = "New Planet Python articles"
-    body = "\n\n".join(
-        [f"{article.title}\n{article.link}" for article in recent_articles]
+
+    def _create_link(article: Article) -> str:
+        return f"<a href='{article.link}'>{article.title}</a>"
+
+    body = "<br>".join(
+        [_create_link(article) for article in recent_articles]
     )
     send_email(FROM_EMAIL, TO_EMAIL, subject, body)
 
