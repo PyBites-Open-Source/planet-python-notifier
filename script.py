@@ -22,10 +22,7 @@ class Article(NamedTuple):
 
 def fetch_articles() -> list[Article]:
     feed = feedparser.parse(PLANET_PYTHON_FEED)
-    return [
-        Article(entry.title, entry.link, entry.published)
-        for entry in feed.entries
-    ]
+    return [Article(entry.title, entry.link, entry.published) for entry in feed.entries]
 
 
 def filter_recent_articles(
@@ -40,9 +37,7 @@ def filter_recent_articles(
     return recent_articles
 
 
-def send_email(
-    from_email: str, to_email: str, subject: str, content: str
-) -> None:
+def send_email(from_email: str, to_email: str, subject: str, content: str) -> None:
     message = Mail(
         from_email=from_email,
         to_emails=to_email,
@@ -68,9 +63,7 @@ def main() -> None:
     def _create_link(article: Article) -> str:
         return f"<a href='{article.link}'>{article.title}</a>"
 
-    body = "<br>".join(
-        [_create_link(article) for article in recent_articles]
-    )
+    body = "<br>".join([_create_link(article) for article in recent_articles])
     send_email(FROM_EMAIL, TO_EMAIL, subject, body)
 
 
