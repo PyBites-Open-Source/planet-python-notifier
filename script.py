@@ -1,6 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from typing import NamedTuple
-from zoneinfo import ZoneInfo
 
 import feedparser
 from dateutil.parser import parse
@@ -33,8 +32,7 @@ def filter_recent_articles(
     articles: list[Article], days: int = ONE_DAY
 ) -> list[Article]:
     recent_articles = []
-    timezone = ZoneInfo("UTC")
-    now = datetime.now(timezone)
+    now = datetime.now(UTC)
     for article in articles:
         publish_date = parse(article.publish_date)
         if now - publish_date <= timedelta(days):
