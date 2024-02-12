@@ -27,4 +27,5 @@ jobs:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
           FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
           TO_EMAIL: ${{ secrets.TO_EMAIL }}
+          IGNORE_DOMAINS: ${{ env.IGNORE_DOMAINS }}
         run: python script.py
