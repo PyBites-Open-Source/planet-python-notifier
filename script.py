@@ -1,9 +1,10 @@
 from datetime import datetime, timedelta, UTC
 from typing import NamedTuple
+from urllib.parse import urlparse
 
 import feedparser
 from dateutil.parser import parse
-from decouple import config
+from decouple import config, Csv
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
@@ -12,6 +13,7 @@ FROM_EMAIL = config("FROM_EMAIL")
 TO_EMAIL = config("TO_EMAIL")
 PLANET_PYTHON_FEED = "https://planetpython.org/rss20.xml"
 ONE_DAY = 1
+IGNORE_DOMAINS = config("IGNORE_DOMAINS", cast=Csv())
 
 
 class Article(NamedTuple):
@@ -31,9 +33,14 @@ def filter_recent_articles(
     recent_articles = []
     now = datetime.now(UTC)
     for article in articles:
+        article_domain = urlparse(article.link).netloc
+        if any(ignored in article_domain for ignored in IGNORE_DOMAINS):
+            continue
+
         publish_date = parse(article.publish_date)
         if now - publish_date <= timedelta(days):
             recent_articles.append(article)
+
     return recent_articles
 
 
