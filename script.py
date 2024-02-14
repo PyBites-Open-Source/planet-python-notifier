@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, UTC
+import sys
 from typing import NamedTuple
 from urllib.parse import urlparse
 
@@ -12,7 +13,6 @@ SENDGRID_API_KEY = config("SENDGRID_API_KEY")
 FROM_EMAIL = config("FROM_EMAIL")
 TO_EMAIL = config("TO_EMAIL")
 PLANET_PYTHON_FEED = "https://planetpython.org/rss20.xml"
-ONE_DAY = 1
 IGNORE_DOMAINS = config("IGNORE_DOMAINS", cast=Csv())
 
 
@@ -27,9 +27,7 @@ def fetch_articles() -> list[Article]:
     return [Article(entry.title, entry.link, entry.published) for entry in feed.entries]
 
 
-def filter_recent_articles(
-    articles: list[Article], days: int = ONE_DAY
-) -> list[Article]:
+def filter_recent_articles(articles: list[Article], *, days: int) -> list[Article]:
     recent_articles = []
     now = datetime.now(UTC)
     for article in articles:
@@ -61,7 +59,8 @@ def send_email(from_email: str, to_email: str, subject: str, content: str) -> No
 
 def main() -> None:
     articles = fetch_articles()
-    recent_articles = filter_recent_articles(articles)
+    num_days = int(sys.argv[1] if len(sys.argv) == 2 else 1)
+    recent_articles = filter_recent_articles(articles, days=num_days)
     if len(recent_articles) == 0:
         print("No new articles found")
         return
